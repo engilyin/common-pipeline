@@ -55,7 +55,7 @@ class FourPartReleaseVersion extends ReleaseVersion {
         def major = newVersion[0]
         def build = newVersion[1]
         def year = newVersion[2]
-        def timestamp = newVersion[3]
+        def timestamp = String.format("%04d", newVersion[3])
         return "$major.$build.$year.$timestamp"
     }
 
