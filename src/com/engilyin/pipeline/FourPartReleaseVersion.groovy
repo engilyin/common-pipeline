@@ -45,8 +45,8 @@ class FourPartReleaseVersion extends ReleaseVersion {
         }
 
         def now = new Date()
-        gitVersion[2] = now.format("yy")
-        gitVersion[3] = now.format("MMdd")
+        gitVersion[2] = now.format("yy") as int
+        gitVersion[3] = now.format("MMdd") as int
 
         return gitVersion
     }
