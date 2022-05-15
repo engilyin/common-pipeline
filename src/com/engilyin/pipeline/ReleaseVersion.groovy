@@ -97,7 +97,12 @@ abstract class ReleaseVersion implements Serializable {
             for(f in files) {
                 steps.echo "Updating the file $f"
                 updateVersionSourceFile(f, newVersion)
-                steps.sh "git add $f"
+               
+                try {
+                     steps.sh "git add $f"
+                } catch(Exception e) {
+                    steps.echo "Git unable to add $f. Just ignore it."
+                }
             }
             def changedFiles = steps.sh(returnStdout: true, script: "git status")
             steps.echo "Changed files: $changedFiles"
