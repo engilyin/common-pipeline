@@ -31,6 +31,7 @@ def call(Map vars) {
     def tagPattern = isHotfix ? "v\\d+\\.\\d+\\.\\d+\\.\\d+" : "v\\d+\\.\\d+\\.\\d+"
 
     // Get last matching tag
+    gitAskPass(gitCredentials, "git fetch --tags")
     def lastTag = sh(script: "git for-each-ref --sort=-v:refname --count=1 --format='%(refname:short)' 'refs/tags/v*'", returnStdout: true).trim()
     echo "Last Tag: ${lastTag}"
 
