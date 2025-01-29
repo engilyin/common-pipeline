@@ -8,6 +8,7 @@ def call(Map vars) {
     def gitCredentials = vars.get("gitCredentials", null)
 
     // Get baseVersion from Gradle
+    sh "chmod 777 gradlew"
     def baseVersion = sh(script: "./gradlew properties | grep '^baseVersion:' | awk '{print \$2}'", returnStdout: true).trim()
     def (major, minor, buildNo) = baseVersion.tokenize('.').collect { it.toInteger() }
 
