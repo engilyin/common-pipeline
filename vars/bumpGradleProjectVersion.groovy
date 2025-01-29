@@ -10,14 +10,19 @@ def call(Map vars) {
     // Get baseVersion from Gradle
     sh "chmod 777 gradlew"
     def baseVersion = sh(script: "./gradlew properties | grep '^baseVersion:' | awk '{print \$2}'", returnStdout: true).trim()
+    echo "baseVersion=${baseVersion}"
+
     def (major, minor, buildNo) = baseVersion.tokenize('.').collect { it.toInteger() }
 
-    // Get the current Git branch
-    def branch = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+    def branch = env.BRANCH
+    echo "The current Git branch: ${branch}"
+
     def isHotfix = branch.startsWith('hotfix/')
+    echo "Is Hotfix: ${isHotfix}"
 
     // Return snapshot version if not main/hotfix
     if (branch != 'main' && !isHotfix) {
+        echo "It is not a release or hotfix. Fallback to SNAPSHOT"
         env.VERSION = "${baseVersion}-SNAPSHOT"
         return env.VERSION
     }
@@ -27,6 +32,7 @@ def call(Map vars) {
 
     // Get last matching tag
     def lastTag = sh(script: "git for-each-ref --sort=-v:refname --count=1 --format='%(refname:short)' refs/tags/${tagPattern}", returnStdout: true).trim()
+    echo "Last Tag: ${lastTag}"
 
     // Start new build number at 1
     buildNo = 1
@@ -49,6 +55,8 @@ def call(Map vars) {
     }
 
     def newVersion = isHotfix ? "v${major}.${minor}.${buildNo}.${versionParts[3]}" : "v${major}.${minor}.${buildNo}"
+
+    echo "Define a new version: ${newVersion}"
 
     // Tag and push new version
     sh "git tag -a ${newVersion} -m 'Release ${newVersion}'"
