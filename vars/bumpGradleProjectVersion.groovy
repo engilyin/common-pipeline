@@ -14,7 +14,7 @@ def call(Map vars) {
 
     def (major, minor, buildNo) = baseVersion.tokenize('.').collect { it.toInteger() }
 
-    def branch = env.BRANCH
+    def branch = env.BRANCH_NAME
     echo "The current Git branch: ${branch}"
 
     def isHotfix = branch.startsWith('hotfix/')
