@@ -58,13 +58,13 @@ def call(Map vars) {
         }
     }
 
-    def newVersion = isHotfix ? "${versionTagPrefix}${major}.${minor}.${buildNo}.${versionParts[3]}" : "${versionTagPrefix}${major}.${minor}.${buildNo}"
+    def newVersion = isHotfix ? "${major}.${minor}.${buildNo}.${versionParts[3]}" : "${major}.${minor}.${buildNo}"
 
     echo "Define a new version: ${newVersion}"
 
     // Tag and push new version
-    sh "git tag -a ${newVersion} -m 'Release for ${versionTagPrefix} ${newVersion}'"
-    gitAskPass(gitCredentials, "git push origin ${newVersion}")
+    sh "git tag -a ${versionTagPrefix}${newVersion} -m 'Release for ${versionTagPrefix} ${newVersion}'"
+    gitAskPass(gitCredentials, "git push origin ${versionTagPrefix}${newVersion}")
 
     env.VERSION = newVersion
     return newVersion
