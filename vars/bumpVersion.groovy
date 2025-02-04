@@ -12,7 +12,7 @@ def call(Map vars) {
 
 
     // Get baseVersion from Gradle
-    def baseVersion = sh(script: "./cat ${baseVersionFile} | grep '^baseVersion=' | awk '{print \$2}'", returnStdout: true).trim()
+    def baseVersion = sh(script: "cat ${baseVersionFile} | grep '^baseVersion=' | awk '{print \$2}'", returnStdout: true).trim()
     echo "baseVersion=${baseVersion}"
 
     def (major, minor, buildNo) = baseVersion.tokenize('.').collect { it.toInteger() }
