@@ -63,7 +63,7 @@ def call(Map vars) {
     echo "Define a new version: ${newVersion}"
 
     // Tag and push new version
-    sh "git tag -a ${newVersion} -m 'Release ${newVersion}'"
+    sh "git tag -a ${newVersion} -m 'Release for ${versionTagPrefix} ${newVersion}'"
     gitAskPass(gitCredentials, "git push origin ${newVersion}")
 
     env.VERSION = newVersion
