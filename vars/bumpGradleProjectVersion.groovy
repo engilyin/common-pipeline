@@ -32,7 +32,7 @@ def call(Map vars) {
     def tagPattern = isHotfix ? "v\\d+\\.\\d+\\.\\d+\\.\\d+" : "v\\d+\\.\\d+\\.\\d+"
 
     // Get last matching tag
-    def lastTag = gitAskPass(gitCredentials, "git ls-remote --tags --sort=creatordate | grep refs/tags/${versionTagPrefix} | awk -F'/' '/refs\\/tags\\/${versionTagPrefix}/{print $3}' | tail -n 1")
+    def lastTag = gitAskPass(gitCredentials, "git ls-remote --tags --sort=creatordate | grep refs/tags/${versionTagPrefix} | awk -F'/' '/refs\\/tags\\/${versionTagPrefix}/{print \$3}' | tail -n 1")
     echo "Last Tag: ${lastTag}"
 
     // Start new build number at 1
