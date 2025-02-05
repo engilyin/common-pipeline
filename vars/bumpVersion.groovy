@@ -34,8 +34,14 @@ def call(Map vars) {
     def tagPattern = isHotfix ? "v\\d+\\.\\d+\\.\\d+\\.\\d+" : "v\\d+\\.\\d+\\.\\d+"
 
     // Get last matching tag
-    gitAskPass(gitCredentials, "git fetch --tags")
-    def lastTag = sh(script: "git for-each-ref --sort=-v:refname --count=1 --format='%(refname:short)' 'refs/tags/${versionTagPrefix}*'", returnStdout: true).trim()
+
+    //Old way which would generate too much output listing all tags fro all times
+    //gitAskPass(gitCredentials, "git fetch --tags")
+    //def lastTag = sh(script: "git for-each-ref --sort=-v:refname --count=1 --format='%(refname:short)' 'refs/tags/${versionTagPrefix}*'", returnStdout: true).trim()
+    
+    //new way based on ls-remote
+    def lastTag = gitAskPass(gitCredentials, "git ls-remote --tags --sort=creatordate | grep refs/tags/${versionTagPrefix} | awk -F'/' '/refs\\/tags\\/${versionTagPrefix}/{print $3}' | tail -n 1")
+    
     echo "Last Tag: ${lastTag}"
 
     // Start new build number at 1

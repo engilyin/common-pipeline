@@ -6,6 +6,7 @@
 **/
 def call(Map vars) {
     def gitCredentials = vars.get("gitCredentials", null)
+    def versionTagPrefix = vars.get("versionTagPrefix", "v")
 
     // Get baseVersion from Gradle
     sh "chmod 777 gradlew"
@@ -31,15 +32,14 @@ def call(Map vars) {
     def tagPattern = isHotfix ? "v\\d+\\.\\d+\\.\\d+\\.\\d+" : "v\\d+\\.\\d+\\.\\d+"
 
     // Get last matching tag
-    gitAskPass(gitCredentials, "git fetch --tags")
-    def lastTag = sh(script: "git for-each-ref --sort=-v:refname --count=1 --format='%(refname:short)' 'refs/tags/v*'", returnStdout: true).trim()
+    def lastTag = gitAskPass(gitCredentials, "git ls-remote --tags --sort=creatordate | grep refs/tags/${versionTagPrefix} | awk -F'/' '/refs\\/tags\\/${versionTagPrefix}/{print $3}' | tail -n 1")
     echo "Last Tag: ${lastTag}"
 
     // Start new build number at 1
     buildNo = 1
 
     if (lastTag) {
-        def versionParts = lastTag.replace('v', '').tokenize('.').collect { it.toInteger() }
+        def versionParts = lastTag.replace("${versionTagPrefix}", '').tokenize('.').collect { it.toInteger() }
 
         if (isHotfix) {
             if (versionParts[0..2] != [major, minor, buildNo]) {
@@ -55,7 +55,7 @@ def call(Map vars) {
         }
     }
 
-    def newVersion = isHotfix ? "v${major}.${minor}.${buildNo}.${versionParts[3]}" : "v${major}.${minor}.${buildNo}"
+    def newVersion = isHotfix ? "${versionTagPrefix}${major}.${minor}.${buildNo}.${versionParts[3]}" : "${versionTagPrefix}${major}.${minor}.${buildNo}"
 
     echo "Define a new version: ${newVersion}"
 

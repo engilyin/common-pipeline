@@ -26,8 +26,11 @@ def call(credentialsId, gitCommand) {
     echo "Prepare git ask pass script at $gitAskPassScriptPath"
 
     sh("chmod +x $gitAskPassScriptPath")
+    def output = ""
     withCredentials([usernamePassword(credentialsId: credentialsId, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {            
-        sh "GIT_ASKPASS=$gitAskPassScriptPath $gitCommand"
+        output = sh(script: "GIT_ASKPASS=$gitAskPassScriptPath $gitCommand", returnStdout: true).trim()
     }
     sh("rm $gitAskPassScriptPath")
+
+    return output
 }
