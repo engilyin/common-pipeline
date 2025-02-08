@@ -14,6 +14,7 @@ def call(Map vars) {
     String securityGroups = vars.get("securityGroups", null)
     String appImage = vars.get("appImage", null)
     String envir = vars.get("envir", null)
+    boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
 
     withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -38,7 +39,8 @@ def call(Map vars) {
                 securityGroups: securityGroups,
                 appImage: appImage,
                 envir: envir,
-                baseTaskJson: baseTaskJson
+                baseTaskJson: baseTaskJson,
+                noCleanupOnFailure: noCleanupOnFailure
             )
 
             if (!awsValidateServiceCreation(deploymentSuccess: success,

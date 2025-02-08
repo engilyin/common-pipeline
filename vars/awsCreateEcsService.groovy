@@ -24,7 +24,7 @@ def call(Map vars) {
                 echo '${baseTaskJson}' | jq '
                     .family = "${serviceName}" |
                     .containerDefinitions[0].image = "${appImage}:${deployedVersion}" |
-                    .containerDefinitions[0].environment |= map(if .name == "APP_ENV" then .value = "${envir}" else . end)'
+                    .containerDefinitions[0].environment |= map(if .name == "APP_ENV" then .value = "${envir}" else . end)
                 '
             """,
             returnStdout: true
