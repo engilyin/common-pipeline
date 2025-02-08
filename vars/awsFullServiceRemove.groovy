@@ -22,7 +22,7 @@ def call(Map vars) {
         echo "🔍 Finding the service..."
         def serviceArn = awsExistedServcieArn(clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
 
-        if(!oldServiceArn.isEmpty()) {
+        if(!serviceArn.isEmpty()) {
 
             sh """
                 echo "🔴 Deregistering ${serviceArn} service..."
