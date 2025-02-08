@@ -11,6 +11,7 @@ def call(Map vars) {
     String servicePrefix = vars.get("servicePrefix", null)
     boolean deploymentSuccess = vars.get("deploymentSuccess", false)
     int waitMins = vars.get("waitMins", 3)
+    boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
 
     if (deploymentSuccess) {
         try {
@@ -22,12 +23,20 @@ def call(Map vars) {
             return true
         } catch (Exception e) {
             echo "❌ Deployment failed during stabilization! Proceeding to cleanup..."
-            cleanupFailedDeployment(clusterName, serviceName)
+            if(noCleanupOnFailure) {
+                echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
+            } else {
+                awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+            }
             return false
         }
     } else {
         echo "❌ Service creation failed! Proceeding to cleanup..."
-        awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+        if(noCleanupOnFailure) {
+            echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
+        } else {
+            awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+        }
         return false
     }
 }
