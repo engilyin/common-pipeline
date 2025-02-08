@@ -20,7 +20,7 @@ def call(Map vars) {
         ]]) {
 
         echo "🔍 Finding old service..."
-        def oldServiceArn = awsServcieExists(otherVersions: true, clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
+        def oldServiceArn = awsExistedServcieArn(otherVersions: true, clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
 
         sh """
             echo "📄 Registering new service to Target Group..."

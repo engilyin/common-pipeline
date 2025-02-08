@@ -23,7 +23,7 @@ def call(Map vars) {
     ]]) {
         echo "🚀 Starting deployment process..."
 
-        def existedServiceArn = awsServcieExists(clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
+        def existedServiceArn = awsExistedServcieArn(clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
 
         if (existedServiceArn.isEmpty()) {
             
