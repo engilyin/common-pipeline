@@ -22,21 +22,31 @@ def call(Map vars) {
             echo "✅ Service is up and running!"
             return true
         } catch (Exception e) {
-            echo "❌ Deployment failed during stabilization! Proceeding to cleanup..."
-            if(noCleanupOnFailure) {
-                echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
-            } else {
-                awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
-            }
+            cleanup("❌ Deployment failed during stabilization! Proceeding to cleanup (${e})...",
+               noCleanupOnFailure, 
+               clusterName, 
+               serviceName, 
+               servicePrefix)
+
             return false
         }
     } else {
-        echo "❌ Service creation failed! Proceeding to cleanup..."
-        if(noCleanupOnFailure) {
-            echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
-        } else {
-            awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
-        }
+        cleanup("❌ Service creation failed! Proceeding to cleanup...",
+               noCleanupOnFailure, 
+               clusterName, 
+               serviceName, 
+               servicePrefix)
+
         return false
     }
 }
+
+void cleanup(String message, boolean noCleanupOnFailure, String clusterName, String serviceName, String servicePrefix) {
+    echo "$message"
+    if(noCleanupOnFailure) {
+        echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
+    } else {
+        echo "🧹 Triggering cleanup..."
+        awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+    }
+}   
