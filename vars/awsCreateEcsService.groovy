@@ -14,6 +14,7 @@ def call(Map vars) {
     String appImage = vars.get("appImage", null)
     String envir = vars.get("envir", null)
     String baseTaskJson = vars.get("baseTaskJson", null)
+    boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
 
     try {
         echo "📄 Preparing ECS Task Definition..."
@@ -45,8 +46,12 @@ def call(Map vars) {
         return true
     } catch (Exception e) {
         echo "❌ Deployment failed: ${e.getMessage()}"
-        echo "🧹 Triggering cleanup..."
-        awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+        if(noCleanupOnFailure) {
+            echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
+        } else {
+            echo "🧹 Triggering cleanup..."
+            awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+        }
         return false
     }
 
