@@ -46,7 +46,8 @@ def call(Map vars) {
             if (!awsValidateServiceCreation(deploymentSuccess: success,
                     clusterName: clusterName,
                     serviceName: serviceName,
-                    servicePrefix: servicePrefix)) {
+                    servicePrefix: servicePrefix,
+                    noCleanupOnFailure: noCleanupOnFailure)) {
                 echo "❌ ECS Service deployment failed!"
                 return false
             }
