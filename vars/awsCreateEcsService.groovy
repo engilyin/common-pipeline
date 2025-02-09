@@ -15,6 +15,8 @@ def call(Map vars) {
     String envir = vars.get("envir", null)
     String baseTaskJson = vars.get("baseTaskJson", null)
     boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
+    String assignPublicIp = vars.get("assignPublicIp", false) ? 'ENABLED' : 'DISABLED' 
+    
 
     try {
         echo "📄 Preparing ECS Task Definition..."
@@ -41,7 +43,7 @@ def call(Map vars) {
         sh """
             aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} \
                 --task-definition ${serviceName} --desired-count 1 \
-                --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=DISABLED}"
+                --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=${assignPublicIp}}"
         """
         return true
     } catch (Exception e) {

@@ -14,6 +14,7 @@ def call(Map vars) {
     String securityGroups = vars.get("securityGroups", null)
     String appImage = vars.get("appImage", null)
     String envir = vars.get("envir", null)
+    boolean assignPublicIp = vars.get("assignPublicIp", false)
     boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
 
     withCredentials([[
@@ -40,6 +41,7 @@ def call(Map vars) {
                 appImage: appImage,
                 envir: envir,
                 baseTaskJson: baseTaskJson,
+                assignPublicIp: assignPublicIp,
                 noCleanupOnFailure: noCleanupOnFailure
             )
 
