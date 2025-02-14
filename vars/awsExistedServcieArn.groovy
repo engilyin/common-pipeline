@@ -14,7 +14,6 @@ def call(Map vars) {
     def grepCommand = otherVersions ? "-v ${serviceName}" : "${serviceName}"
 
     return sh(script: """
-                         aws ecs list-services --cluster ${clusterName} --query "serviceArns[?contains(@, '${servicePrefix}-')]" --output text | grep ${grepCommand} || true
-                      """, 
-                      returnStdout: true).trim()
+        aws ecs list-services --cluster ${clusterName} --query "serviceArns[?contains(@, '${servicePrefix}-')]" --output text | tr ' ' '\\n' | grep ${grepCommand} || true
+    """,  returnStdout: true).trim()
 }
