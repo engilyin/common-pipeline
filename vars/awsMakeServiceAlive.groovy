@@ -23,19 +23,13 @@ def call(Map vars) {
         def oldServiceArn = awsExistedServcieArn(otherVersions: true, clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
         echo "Found the old service(s): ${oldServiceArn}"
 
+        echo "📄 Updating ECS Service to use the Target Group..."
         sh """
-            echo "📄 Registering new service to Target Group..."
-            NEW_TASK_ID=\$(aws ecs list-tasks --cluster ${clusterName} --service-name ${serviceName} --query "taskArns[0]" --output text)
-            ENI_ID=\$(aws ecs describe-tasks --cluster ${clusterName} --tasks \$NEW_TASK_ID --query "tasks[0].attachments[0].details[?name=='networkInterfaceId'].value" --output text)
-            ENI_IP=\$(aws ec2 describe-network-interfaces --network-interface-ids \$ENI_ID --query "NetworkInterfaces[0].PrivateIpAddress" --output text)
-
-            aws elbv2 register-targets --target-group-arn ${targetGroupArn} --targets Id=\$ENI_IP,Port=8080
+            aws ecs update-service --cluster ${clusterName} --service ${serviceName} --load-balancers targetGroupArn=${targetGroupArn},containerName=${serviceName},containerPort=8080
         """
 
         if(!oldServiceArn.isEmpty()) {
             def oldServiceName = oldServiceArn.tokenize('/').last()
-
-            awsDeregisterTasksFromTargetGroup clusterName: clusterName, serviceName: oldServiceName, targetGroupArn: targetGroupArn
             
             echo "🔴 Deleting old service: ${oldServiceArn}"
             awsCleanupFailedDeployment clusterName: clusterName, serviceName: oldServiceName, servicePrefix: servicePrefix
