@@ -25,7 +25,7 @@ def call(Map vars) {
 
         echo "📄 Updating ECS Service to use the Target Group..."
         sh """
-            aws ecs update-service --cluster ${clusterName} --service ${serviceName} --load-balancers targetGroupArn=${targetGroupArn},containerName=${serviceName},containerPort=8080
+            aws ecs update-service --cluster ${clusterName} --service ${serviceName} --load-balancers targetGroupArn=${targetGroupArn},containerName=${servicePrefix},containerPort=8080
         """
 
         if(!oldServiceArn.isEmpty()) {
