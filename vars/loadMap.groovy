@@ -4,17 +4,12 @@
  * Loads the Map<String, String> from the file
  *
 **/
-def call(Map vars) {
-
-    def filename = vars.get('filename', '')
-
-    Map<String, String> result = readFile(filename)
+def call(String content) {
+    return content
         .split('\n')
-        .findAll { it && !it.startsWith('#') }  // skip empty lines and comments
+        .findAll { it && !it.startsWith('#') }
         .collectEntries { line ->
             def (key, value) = line.split('=', 2)
             [(key.trim()): value.trim()]
         }
-
-    return result
 }
