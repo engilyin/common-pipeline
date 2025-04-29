@@ -8,6 +8,7 @@ def call(Map vars) {
     String awsCredentials = vars.get("awsCredentials", null)
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
+    String taskJson = vars.get("taskJson", null)
     String deployedVersion = vars.get("deployedVersion", null)
     String subnets = vars.get("subnets", null)
     String securityGroups = vars.get("securityGroups", null)
@@ -34,7 +35,7 @@ def call(Map vars) {
                 subnets: subnets,
                 securityGroups: securityGroups,
                 envir: envir,
-                taskJson: baseTaskJson,
+                taskJson: taskJson,
                 assignPublicIp: assignPublicIp,
                 noCleanupOnFailure: noCleanupOnFailure
             )
