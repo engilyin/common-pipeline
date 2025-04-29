@@ -22,11 +22,9 @@ def call(Map vars) {
         def oldServiceArn = awsExistedServcieArn(otherVersions: true, clusterName: clusterName, serviceName: serviceName)
         echo "Found the old service(s): ${oldServiceArn}"
 
-        String servicePrefix = serviceName.replaceFirst(/-v[0-9]+(-[0-9]+)*$/, '')
-
         echo "📄 Updating ECS Service to use the Target Group..."
         sh """
-            aws ecs update-service --cluster ${clusterName} --service ${serviceName} --load-balancers targetGroupArn=${targetGroupArn},containerName=${servicePrefix},containerPort=8080
+            aws ecs update-service --cluster ${clusterName} --service ${serviceName} --load-balancers targetGroupArn=${targetGroupArn},containerName=${serviceName},containerPort=8080
         """
 
         if(!oldServiceArn.isEmpty()) {
