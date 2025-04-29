@@ -8,7 +8,6 @@ def call(Map vars) {
     String awsCredentials = vars.get("awsCredentials", null)
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
-    String servicePrefix = vars.get("servicePrefix", null)
     String targetGroupArn = vars.get("targetGroupArn", null)
 
 
@@ -20,8 +19,10 @@ def call(Map vars) {
         ]]) {
 
         echo "🔍 Finding old service..."
-        def oldServiceArn = awsExistedServcieArn(otherVersions: true, clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
+        def oldServiceArn = awsExistedServcieArn(otherVersions: true, clusterName: clusterName, serviceName: serviceName)
         echo "Found the old service(s): ${oldServiceArn}"
+
+        String servicePrefix = serviceName.replaceFirst(/-v[0-9]+(-[0-9]+)*$/, '')
 
         echo "📄 Updating ECS Service to use the Target Group..."
         sh """
@@ -32,7 +33,7 @@ def call(Map vars) {
             def oldServiceName = oldServiceArn.tokenize('/').last()
             
             echo "🔴 Deleting old service: ${oldServiceArn}"
-            awsCleanupFailedDeployment clusterName: clusterName, serviceName: oldServiceName, servicePrefix: servicePrefix
+            awsCleanupFailedDeployment clusterName: clusterName, serviceName: oldServiceName
 
         } else {
             echo "⚠️No old service to clean up: ${oldServiceArn}"

@@ -8,11 +8,9 @@ def call(Map vars) {
     String awsCredentials = vars.get("awsCredentials", null)
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
-    String servicePrefix = vars.get("servicePrefix", null)
     String deployedVersion = vars.get("deployedVersion", null)
     String subnets = vars.get("subnets", null)
     String securityGroups = vars.get("securityGroups", null)
-    String appImage = vars.get("appImage", null)
     String envir = vars.get("envir", null)
     boolean assignPublicIp = vars.get("assignPublicIp", false)
     boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
@@ -25,22 +23,18 @@ def call(Map vars) {
     ]]) {
         echo "🚀 Starting deployment process..."
 
-        def existedServiceArn = awsExistedServcieArn(clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
+        def existedServiceArn = awsExistedServcieArn(clusterName: clusterName, serviceName: serviceName)
 
         if (existedServiceArn.isEmpty()) {
             
-            String baseTaskJson = readFile('base-task.json').trim()
-
             def success = awsCreateEcsService(
                 clusterName: clusterName,
                 serviceName: serviceName,
-                servicePrefix: servicePrefix,
                 deployedVersion: deployedVersion,
                 subnets: subnets,
                 securityGroups: securityGroups,
-                appImage: appImage,
                 envir: envir,
-                baseTaskJson: baseTaskJson,
+                taskJson: baseTaskJson,
                 assignPublicIp: assignPublicIp,
                 noCleanupOnFailure: noCleanupOnFailure
             )
@@ -48,7 +42,6 @@ def call(Map vars) {
             if (!awsValidateServiceCreation(deploymentSuccess: success,
                     clusterName: clusterName,
                     serviceName: serviceName,
-                    servicePrefix: servicePrefix,
                     noCleanupOnFailure: noCleanupOnFailure)) {
                 echo "❌ ECS Service deployment failed!"
                 return false

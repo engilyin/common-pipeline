@@ -7,11 +7,10 @@
 def call(Map vars) {
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
-    String servicePrefix = vars.get("servicePrefix", null)
 
     echo "🧹 Starting cleanup process..."
 
-    def existedServiceArn = awsExistedServcieArn(clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
+    def existedServiceArn = awsExistedServcieArn(clusterName: clusterName, serviceName: serviceName)
     def latestTaskDefinition = sh(
         script: """
             aws ecs list-task-definitions --family-prefix ${serviceName} --sort DESC --query "taskDefinitionArns[0]" --output text || echo ""

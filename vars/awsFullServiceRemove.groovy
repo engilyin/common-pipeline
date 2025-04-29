@@ -8,7 +8,6 @@ def call(Map vars) {
     String awsCredentials = vars.get("awsCredentials", null)
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
-    String servicePrefix = vars.get("servicePrefix", null)
     String targetGroupArn = vars.get("targetGroupArn", null)
 
 
@@ -20,7 +19,7 @@ def call(Map vars) {
         ]]) {
 
         echo "🔍 Finding the service..."
-        def serviceArn = awsExistedServcieArn(clusterName: clusterName, servicePrefix: servicePrefix, serviceName: serviceName)
+        def serviceArn = awsExistedServcieArn(clusterName: clusterName, serviceName: serviceName)
         echo "Found service: ${serviceArn}"
 
         if(!serviceArn.isEmpty()) {
@@ -29,7 +28,7 @@ def call(Map vars) {
             awsDeregisterTasksFromTargetGroup clusterName: clusterName, serviceName: foundServiceName, targetGroupArn: targetGroupArn
             
             echo "🔴 Deleting the service: ${serviceArn}"
-            awsCleanupFailedDeployment clusterName: clusterName, serviceName: foundServiceName, servicePrefix: servicePrefix
+            awsCleanupFailedDeployment clusterName: clusterName, serviceName: foundServiceName
 
         }
     }

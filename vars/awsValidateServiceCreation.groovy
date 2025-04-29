@@ -8,7 +8,6 @@
 def call(Map vars) {
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
-    String servicePrefix = vars.get("servicePrefix", null)
     boolean deploymentSuccess = vars.get("deploymentSuccess", false)
     int waitMins = vars.get("waitMins", 3)
     boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
@@ -25,8 +24,7 @@ def call(Map vars) {
             cleanup("❌ Deployment failed during stabilization! Proceeding to cleanup (${e})...",
                noCleanupOnFailure, 
                clusterName, 
-               serviceName, 
-               servicePrefix)
+               serviceName)
 
             return false
         }
@@ -34,8 +32,7 @@ def call(Map vars) {
         cleanup("❌ Service creation failed! Proceeding to cleanup...",
                noCleanupOnFailure, 
                clusterName, 
-               serviceName, 
-               servicePrefix)
+               serviceName)
 
         return false
     }
@@ -47,6 +44,6 @@ void cleanup(String message, boolean noCleanupOnFailure, String clusterName, Str
         echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
     } else {
         echo "🧹 Triggering cleanup..."
-        awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName, servicePrefix: servicePrefix
+        awsCleanupFailedDeployment clusterName: clusterName, serviceName: serviceName
     }
 }   

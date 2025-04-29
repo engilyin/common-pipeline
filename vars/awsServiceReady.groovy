@@ -8,11 +8,11 @@ def call(Map vars) {
     String awsCredentials = vars.get("awsCredentials", null)
     String clusterName = vars.get("clusterName", null)
     String serviceName = vars.get("serviceName", null)
-    String servicePrefix = vars.get("servicePrefix", null)
     String checkLogStarts = vars.get("checkLogStarts", null)
     String checkLogsSince = vars.get("checkLogsSince", '5m')
     int waitMins = vars.get("waitMins", 3)
 
+    String servicePrefix = serviceName.replaceFirst(/-v[0-9]+(-[0-9]+)*$/, '')
 
     withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
