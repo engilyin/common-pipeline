@@ -6,6 +6,7 @@
 **/
 def call(String content) {
     return content
+        .trim()
         .split('\n')
         .findAll { it && !it.startsWith('#') }
         .collectEntries { line ->
