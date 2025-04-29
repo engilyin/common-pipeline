@@ -10,7 +10,8 @@ def call(String text, Map<String, String> vars) {
 
     def pattern = /\$\{([^}]+)\}/
 
-    return text.replaceAll(pattern) { fullMatch, key ->
+    return text.replaceAll(pattern) { fullMatch ->
+        def key = fullMatch[1]
         if (!vars.containsKey(key)) {
          error "Missing placeholder: ${key}"
         }
