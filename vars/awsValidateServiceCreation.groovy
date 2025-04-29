@@ -38,7 +38,7 @@ def call(Map vars) {
     }
 }
 
-void cleanup(String message, boolean noCleanupOnFailure, String clusterName, String serviceName, String servicePrefix) {
+void cleanup(String message, boolean noCleanupOnFailure, String clusterName, String serviceName) {
     echo "$message"
     if(noCleanupOnFailure) {
         echo "💤Skipping cleanup. Please clean it up manually (E.g. use awsFullServiceRemove)..."
