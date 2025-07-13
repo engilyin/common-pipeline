@@ -18,6 +18,8 @@ def call(Map args = [:]) {
         def bumpedVersion = "${baseMajor}.${baseMinor}.${basePatch + 1}"
         echo "⚙️ Development mode — using bumped version: ${bumpedVersion}"
         env.VERSION = bumpedVersion
+        writeFile file: 'defined-version.txt', text: bumpedVersion
+
         return bumpedVersion
     }
 
