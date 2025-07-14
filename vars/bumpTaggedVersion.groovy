@@ -55,5 +55,5 @@ def call(Map args = [:]) {
     writeFile file: 'defined-version.txt', text: fullVersion
     env.VERSION = fullVersion
 
-    return newVersion
+    return fullVersion
 }
