@@ -16,6 +16,7 @@ def call(Map vars) {
     int maxCapacity = vars.get("maxCapacity", 10) // Maximum number of tasks
     int cpuTarget = vars.get("cpuTarget", 80) // Target CPU utilization percentage
     int memTarget = vars.get("memTarget", 75) // Target Memory utilization percentage   
+    String launchType = vars.get("launchType", "FARGATE")
 
     try {
 
@@ -27,8 +28,9 @@ def call(Map vars) {
         """
 
         echo "🔧 Creating ECS Service..."
+        def launchTypeFlag = launchType ? "--launch-type ${launchType}" : ""
         sh """
-            aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} \
+            aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} ${launchTypeFlag} \
                 --task-definition ${serviceName} --desired-count ${minCapacity} \
                 --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=${assignPublicIp}}" \
                 --scheduling-strategy REPLICA

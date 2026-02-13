@@ -53,7 +53,7 @@ def call(Map vars) {
             return true
         } else {
             error "❌ Service ${serviceName} already exists. Skipping deployment."
-            retrun false
+            return false
         }
     }
 }
