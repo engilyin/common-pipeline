@@ -15,6 +15,9 @@ def call(Map vars) {
     String envir = vars.get("envir", null)
     boolean assignPublicIp = vars.get("assignPublicIp", false)
     boolean noCleanupOnFailure = vars.get("noCleanupOnFailure", false)
+    int minCapacity = vars.get("minCapacity", 1)
+    int maxCapacity = vars.get("maxCapacity", 10)
+    String fargateType = vars.get("fargateType", null)
 
     withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -37,6 +40,9 @@ def call(Map vars) {
                 envir: envir,
                 taskJson: taskJson,
                 assignPublicIp: assignPublicIp,
+                minCapacity: minCapacity,
+                maxCapacity: maxCapacity,
+                fargateType: fargateType,
                 noCleanupOnFailure: noCleanupOnFailure
             )
 

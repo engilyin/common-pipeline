@@ -16,7 +16,8 @@ def call(Map vars) {
     int maxCapacity = vars.get("maxCapacity", 10) // Maximum number of tasks
     int cpuTarget = vars.get("cpuTarget", 80) // Target CPU utilization percentage
     int memTarget = vars.get("memTarget", 75) // Target Memory utilization percentage   
-    String launchType = vars.get("launchType", "FARGATE")
+    // fargateType controls Fargate vs Fargate Spot behaviour. Expected values: FARGATE or FARGATE_SPOT
+    String fargateType = (vars.get("fargateType") ?: 'FARGATE_SPOT').toString()
 
     try {
 
@@ -28,12 +29,29 @@ def call(Map vars) {
         """
 
         echo "🔧 Creating ECS Service..."
-        def launchTypeFlag = launchType ? "--launch-type ${launchType}" : ""
+
+        // validate fargateType
+        if(!(fargateType in ['FARGATE','FARGATE_SPOT'])) {
+            error "Unsupported fargateType: ${fargateType}. Allowed: FARGATE, FARGATE_SPOT"
+        }
+
+        def launchTypeFlag = ''
+        def capacityProviderFlag = ''
+        if(fargateType == 'FARGATE') {
+            launchTypeFlag = "--launch-type FARGATE"
+        } else {
+            // use capacity provider strategy for Spot
+            capacityProviderFlag = "--capacity-provider-strategy capacityProvider=FARGATE_SPOT,weight=1"
+        }
+
+        // placement strategy: spread tasks across availability zones
+        def placementStrategyFlag = "--placement-strategy type=spread,field=attribute:ecs.availability-zone"
+
         sh """
-            aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} ${launchTypeFlag} \
+            aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} ${launchTypeFlag} ${capacityProviderFlag} \
                 --task-definition ${serviceName} --desired-count ${minCapacity} \
                 --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=${assignPublicIp}}" \
-                --scheduling-strategy REPLICA
+                ${placementStrategyFlag} --scheduling-strategy REPLICA
         """
 
         echo "📈 Setting up Auto Scaling..."
