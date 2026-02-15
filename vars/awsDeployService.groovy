@@ -30,7 +30,8 @@ def call(Map vars) {
         def existedServiceArn = awsExistedServcieArn(clusterName: clusterName, serviceName: serviceName)
 
         if (existedServiceArn.isEmpty()) {
-            
+
+            echo "awsDeployService: fargateType: ${fargateType}, minCapacity: ${minCapacity}, maxCapacity: ${maxCapacity}"
             def success = awsCreateEcsService(
                 clusterName: clusterName,
                 serviceName: serviceName,
