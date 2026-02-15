@@ -37,21 +37,16 @@ def call(Map vars) {
 
         def launchTypeFlag = ''
         def capacityProviderFlag = ''
-        if(fargateType == 'FARGATE') {
-            launchTypeFlag = "--launch-type FARGATE"
-        } else {
+        if(fargateType == 'FARGATE_SPOT') {
             // use capacity provider strategy for Spot
             capacityProviderFlag = "--capacity-provider-strategy capacityProvider=FARGATE_SPOT,weight=1"
         }
-
-        // placement strategy: spread tasks across availability zones
-        def placementStrategyFlag = "--placement-strategy type=spread,field=attribute:ecs.availability-zone"
 
         sh """
             aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} ${launchTypeFlag} ${capacityProviderFlag} \
                 --task-definition ${serviceName} --desired-count ${minCapacity} \
                 --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=${assignPublicIp}}" \
-                ${placementStrategyFlag} --scheduling-strategy REPLICA
+                --launch-type FARGATE --scheduling-strategy REPLICA
         """
 
         echo "📈 Setting up Auto Scaling..."
