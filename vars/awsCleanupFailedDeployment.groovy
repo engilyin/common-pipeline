@@ -37,6 +37,7 @@ def call(Map vars) {
                 echo "🛑 Removing scaling policy: ${policyName}"
                 sh "aws application-autoscaling delete-scaling-policy \
                     --service-namespace ecs --resource-id service/${clusterName}/${serviceName} \
+                    --scalable-dimension ecs:service:DesiredCount \
                     --policy-name ${policyName} || true"
             }
         } else {
