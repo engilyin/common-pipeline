@@ -37,6 +37,9 @@ def call(Map vars) {
 
         def launchTypeFlag = ''
         def capacityProviderFlag = ''
+
+        echo "Selected fargateType: ${fargateType}"
+
         if(fargateType == 'FARGATE') {
             capacityProviderFlag = "--launch-type FARGATE"
         } else {
