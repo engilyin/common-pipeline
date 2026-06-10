@@ -18,6 +18,7 @@ def call(Map vars) {
     int minCapacity = vars.get("minCapacity", 1)
     int maxCapacity = vars.get("maxCapacity", 10)
     String fargateType = vars.get("fargateType", null)
+    String serviceRegistries = vars.get("serviceRegistries", null)
 
     withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -41,6 +42,7 @@ def call(Map vars) {
                 envir: envir,
                 taskJson: taskJson,
                 assignPublicIp: assignPublicIp,
+                serviceRegistries: serviceRegistries,
                 minCapacity: minCapacity,
                 maxCapacity: maxCapacity,
                 fargateType: fargateType,

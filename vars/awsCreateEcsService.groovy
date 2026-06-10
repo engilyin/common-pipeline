@@ -18,6 +18,7 @@ def call(Map vars) {
     int memTarget = vars.get("memTarget", 75) // Target Memory utilization percentage   
     // fargateType controls Fargate vs Fargate Spot behaviour. Expected values: FARGATE or FARGATE_SPOT
     String fargateType = (vars.get("fargateType") ?: 'FARGATE_SPOT').toString()
+    String serviceRegistries = vars.get("serviceRegistries", null)
 
     try {
 
@@ -47,10 +48,15 @@ def call(Map vars) {
             capacityProviderFlag = "--capacity-provider-strategy capacityProvider=FARGATE_SPOT,weight=1"
         }
 
+        def serviceRegistriesFlag = ''
+        if(serviceRegistries) {
+            serviceRegistriesFlag = "--service-registries ${serviceRegistries}"
+        }
+
         sh """
-            aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} ${launchTypeFlag} ${capacityProviderFlag} \
+            aws ecs create-service --cluster ${clusterName} --service-name ${serviceName} ${launchTypeFlag} ${capacityProviderFlag} ${serviceRegistriesFlag} \
                 --task-definition ${serviceName} --desired-count ${minCapacity} \
-                --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=${assignPublicIp}}" \
+                --network-configuration \"awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${securityGroups}],assignPublicIp=${assignPublicIp}}\" \
                 --scheduling-strategy REPLICA
         """
 
